@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#17213b"><title>Hành Trình Chiến Binh</title>
+<style>
+:root{--ink:#18233d;--gold:#f5c76b;--cream:#fff8e9;--muted:#68728b;--blue:#283d69}
+*{box-sizing:border-box}body{margin:0;background:#101a31;color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+button,input,textarea{font:inherit}button{cursor:pointer;border:0;border-radius:14px;padding:12px 18px;font-weight:750;background:var(--gold);color:#352b1d}
+button.secondary{background:#e9edf6;color:#25324f}button:disabled{opacity:.45;cursor:not--allowed}
+.wrap{max-width:1100px;margin:auto;padding:18px}.panel{background:var(--cream);border-radius:24px;padding:clamp(16px,3vw,30px);box-shadow:0 18px 55px #0004}
+header{color:white;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 4px}
+.brand{font-weight:900;letter-spacing:.04em}.brand span{color:var(--gold)}
+.screen{display:none}.screen.active{display:block}.hero{text-align:center;padding:28px 12px}.hero .symbol{font-size:64px}.hero h1{font-size:clamp(28px,5vw,48px);margin:8px 0}.sub{color:var(--muted);line-height:1.6;max-width:680px;margin:8px auto 20px}
+.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:650px;margin:18px auto}
+input,textarea{width:100%;border:1px solid #d8deeb;background:white;border-radius:12px;padding:12px;color:var(--ink);outline:none}textarea{min-height:100px;resize:vertical}
+label{display:block;font-weight:700;font-size:13px;margin-bottom:6px}.wide{grid-column:1/-1}.hint{font-size:12px;color:var(--muted);line-height:1.5}
+.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px}.error{color:#a32d36;text-align:center;min-height:22px;font-weight:650}
+.gamehead{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}.stats{display:flex;gap:8px;flex-wrap:wrap}.pill{background:#edf0f7;border-radius:99px;padding:7px 11px;font-size:13px;font-weight:750}
+canvas{display:block;width:100%;height:auto;aspect-ratio:16/9;background:#9bc8d3;border-radius:18px;border:3px solid #25375d;touch-action:none}
+.gamegrid{display:grid;grid-template-columns:1fr 270px;gap:14px}.side{background:#f0eadc;border-radius:18px;padding:15px}.side h3{margin:2px 0 8px}.side p{font-size:14px;line-height:1.5;color:#59627a}
+.controls{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px}.move{display:flex;gap:10px}.control{width:64px;height:54px;font-size:22px;background:#26395f;color:white;touch-action:none;user-select:none}
+.progress{height:9px;background:#dfe4ee;border-radius:9px;overflow:hidden;margin:10px 0}.progress span{display:block;height:100%;background:#d49b36;width:0}
+.armor{display:flex;gap:6px;flex-wrap:wrap}.armor span{font-size:12px;padding:6px 8px;border-radius:9px;background:#e1e5ed;color:#7b8498}.armor span.on{background:#f8df9d;color:#64450c}
+.modalback{position:fixed;inset:0;background:#081126bb;display:none;align-items:center;justify-content:center;padding:16px;z-index:5}.modalback.show{display:flex}.modal{background:var(--cream);max-width:600px;width:100%;max-height:90vh;overflow:auto;border-radius:22px;padding:22px}.modal h2{margin-top:0}.journalitem{background:white;padding:12px;border-radius:12px;margin:9px 0;white-space:pre-wrap}
+footer{color:#aeb8ce;text-align:center;padding:20px;font-size:12px}
+@media(max-width:760px){.gamegrid{grid-template-columns:1fr}.side{order:2}.formgrid{grid-template-columns:1fr}.wide{grid-column:auto}.wrap{padding:10px}.panel{border-radius:18px}.controls{position:sticky;bottom:5px;background:#fff8e9;padding:8px;border-radius:14px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><div class="brand">✦ HÀNH TRÌNH <span>CHIẾN BINH</span></div><div id="cloudState" class="hint" style="color:#dce4f5">Chế độ ngoại tuyến</div></header>
+<main class="panel">
+<section id="welcome" class="screen active">
+<div class="hero"><div class="symbol">🛡️</div><h1>Hành Trình Chiến Binh</h1><p class="sub">Ai cũng có những trận chiến mà người khác không nhìn thấy. Hãy bước đi theo nhịp độ của riêng bạn — bạn không đơn độc.</p></div>
+<div class="formgrid">
+<div class="wide"><label>Tên nhân vật</label><input id="newName" maxlength="24" placeholder="Ví dụ: Mây, Sóc, An..."></div>
+<div><label>Mã PIN (6–8 chữ số)</label><input id="newPin" inputmode="numeric" maxlength="8" placeholder="Tạo mã PIN"></div>
+<div><label>Nhập lại mã PIN</label><input id="confirmPin" inputmode="numeric" maxlength="8" placeholder="Nhập lại mã PIN"></div>
+<p class="hint wide">Hãy dùng biệt danh, không nhập họ tên, số điện thoại hay thông tin nhận diện thật. Nếu chưa kết nối cơ sở dữ liệu trực tuyến, hồ sơ chỉ được lưu trên thiết bị này.</p>
+</div><div class="error" id="welcomeError"></div>
+<div class="actions"><button id="createBtn">Bắt đầu hành trình</button><button class="secondary" id="loginShow">Đã có hồ sơ? Đăng nhập</button></div>
+</section>
+<section id="login" class="screen">
+<div class="hero"><div class="symbol">🔑</div><h1>Trở lại hành trình</h1><p class="sub">Nhập tên nhân vật và mã PIN bạn đã tạo.</p></div>
+<div class="formgrid"><div class="wide"><label>Tên nhân vật</label><input id="loginName" maxlength="24"></div><div class="wide"><label>Mã PIN</label><input id="loginPin" inputmode="numeric" maxlength="8"></div></div>
+<div class="error" id="loginError"></div><div class="actions"><button id="loginBtn">Tiếp tục</button><button class="secondary" id="backWelcome">Quay lại</button></div>
+</section>
+<section id="game" class="screen">
+<div class="gamehead"><div><strong id="playerLabel">Chiến binh</strong><div class="hint" id="stageLabel">Chặng 1/5</div></div><div class="stats"><span class="pill" id="heartLabel">❤ 3</span><span class="pill" id="gemLabel">✦ 0</span><button class="secondary" id="journalBtn">Nhật ký</button><button class="secondary" id="logoutBtn">Thoát</button></div></div>
+<div class="progress"><span id="progressBar"></span></div>
+<div class="gamegrid"><div><canvas id="gameCanvas" width="960" height="540" aria-label="Màn chơi platform"></canvas>
+<div class="controls"><div class="move"><button class="control" id="leftBtn">◀</button><button class="control" id="rightBtn">▶</button></div><button class="control" id="jumpBtn">⬆</button></div>
+<p class="hint">Điện thoại: giữ ◀ ▶ để di chuyển, nhấn ⬆ để nhảy. Máy tính: dùng A/D hoặc phím ←/→, nhấn Space để nhảy. Đi tới cổng sáng ở cuối màn.</p></div>
+<aside class="side"><h3 id="stageTitle">Cánh đồng vấp ngã</h3><p id="stageStory"></p><h3>Bộ giáp đang rèn</h3><div class="armor" id="armorList"></div><hr style="border:0;border-top:1px solid #d8d0c1;margin:14px 0"><p id="objective">Vượt qua chặng đường và chạm cổng sáng.</p><button id="pauseBtn" class="secondary" style="width:100%">Tạm dừng</button></aside></div>
+</section>
+<section id="finish" class="screen"><div class="hero"><div class="symbol">🏆</div><h1>Chiến binh của chính mình</h1><p class="sub">Bạn đã đi qua hành trình này. Bộ giáp không có nghĩa là bạn không còn yếu lòng — nó nhắc bạn rằng mình đã can đảm bước tiếp.</p><div style="font-size:78px">🛡️⚔️</div><p id="finishText"></p><div class="actions"><button id="reviewJournal">Đọc lại hành trình</button><button class="secondary" id="restartBtn">Chơi lại</button></div></div></section>
+</main><footer>Hành Trình Chiến Binh · Một không gian tự suy ngẫm, không phải nơi đánh giá hay xếp hạng.</footer>
+</div>
+<div class="modalback" id="reflectionModal"><div class="modal"><h2 id="reflectionTitle">Một phút dành cho bản thân</h2><p id="reflectionPrompt"></p><label id="reflectionLabel">Bạn muốn viết điều gì?</label><textarea id="reflectionText" placeholder="Bạn có thể viết thật ngắn, hoặc bỏ qua nếu chưa sẵn sàng..."></textarea><div class="actions"><button id="saveReflection">Lưu và tiếp tục</button><button class="secondary" id="skipReflection">Để sau</button></div></div></div>
+<div class="modalback" id="journalModal"><div class="modal"><h2>📖 Nhật ký hành trình</h2><p class="hint">Chỉ người đăng nhập vào hồ sơ này mới xem được nhật ký. Tránh ghi thông tin nhận diện hoặc điều bạn không muốn lưu lại.</p><div id="journalEntries"></div><div class="actions"><button class="secondary" id="closeJournal">Đóng</button></div></div></div>
+<div class="modalback" id="pauseModal"><div class="modal"><h2>Tạm dừng một chút</h2><p>Bạn không cần phải vượt qua mọi thứ thật nhanh. Nghỉ ngơi cũng là một phần của hành trình.</p><div class="actions"><button id="resumeBtn">Tiếp tục</button></div></div></div>
+<script>
+(()=>{
+const $=id=>document.getElementById(id);
+const stages=[
+ {title:"Cánh đồng vấp ngã",story:"Có những ngày ta vấp ngã vì một lời chê, một điểm số, hay cảm giác mình chậm hơn người khác. Hãy cứ đứng dậy theo cách của bạn.",prompt:"Gần đây, điều gì khiến bạn cảm thấy mình đang bị so sánh hoặc chưa đủ tốt?",label:"Bạn muốn chia sẻ điều gì?"},
+ {title:"Hang động yêu quái",story:"Yêu quái ở đây tượng trưng cho nỗi sợ, lời phán xét và những kỳ vọng nặng nề. Bạn có thể đối mặt từng bước, không cần chiến đấu một mình.",prompt:"Áp lực nào đang khiến bạn lo lắng nhất? Nó thường đến từ đâu?",label:"Điều đang làm bạn áp lực"},
+ {title:"Bức tường kỳ vọng",story:"Bức tường được xây từ những chữ 'phải': phải giỏi, phải giống ai đó, phải luôn thành công. Bạn có quyền chọn con đường phù hợp với mình.",prompt:"Bạn thường tự đặt kỳ vọng nào lên bản thân? Kỳ vọng nào thực sự là của bạn?",label:"Những kỳ vọng bạn muốn nhìn lại"},
+ {title:"Khu rừng đồng đội",story:"Trong khu rừng này, mỗi ánh đèn là một người cũng đang có câu chuyện riêng. Bạn không phải người duy nhất đang cố gắng.",prompt:"Một điều tốt đẹp bạn nhìn thấy ở bản thân là gì? Ai hoặc điều gì có thể hỗ trợ bạn?",label:"Điểm mạnh và nguồn hỗ trợ"},
+ {title:"Lò rèn nội lực",story:"Chiến binh không được tạo nên vì chưa từng yếu đuối. Chiến binh được tạo nên từ những lần hiểu mình hơn và tiếp tục bước đi.",prompt:"Một điều bạn muốn cải thiện, và một lời cổ vũ bạn muốn để lại cho chính mình là gì?",label:"Lời nhắn dành cho bản thân"}
+];
+const armor=["Áo giáp","Găng tay","Ủng chiến binh","Khiên","Mũ chiến binh"];
+let profile=null,stage=0,x=70,y=390,vx=0,vy=0,onGround=false,hearts=3,gems=0,paused=false,keys={},hazards=[],foes=[],coins=[],gateX=900,last=0,raf=0;
+const canvas=$("gameCanvas"),ctx=canvas.getContext("2d");
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));$(id).classList.add("active")}
+function save(){if(profile){localStorage.setItem("warrior_"+profile.name.toLowerCase(),JSON.stringify(profile));}}
+function safeName(s){return s.trim().replace(/\s+/g," ").slice(0,24)}
+function create(){let name=safeName($("newName").value),pin=$("newPin").value,confirm=$("confirmPin").value;
+ if(!name||!/^\d{6,8}$/.test(pin)||pin!==confirm){$("welcomeError").textContent="Hãy nhập tên nhân vật và mã PIN 6–8 chữ số khớp nhau.";return}
+ let key="warrior_"+name.toLowerCase();if(localStorage.getItem(key)){$("welcomeError").textContent="Tên nhân vật này đã có trên thiết bị. Hãy đăng nhập hoặc chọn tên khác.";return}
+ profile={name,pin,stage:0,entries:[],created:Date.now(),armor:[]};save();startGame();}
+function login(){let name=safeName($("loginName").value),pin=$("loginPin").value,raw=localStorage.getItem("warrior_"+name.toLowerCase());if(!raw){$("loginError").textContent="Không tìm thấy hồ sơ trên thiết bị này.";return}
+ let p=JSON.parse(raw);if(p.pin!==pin){$("loginError").textContent="Mã PIN chưa đúng.";return}profile=p;startGame();}
+function startGame(){stage=Math.min(profile.stage||0,4);hearts=3;gems=profile.gems||0;show("game");$("playerLabel").textContent="✦ "+profile.name;loadStage();cancelAnimationFrame(raf);last=0;raf=requestAnimationFrame(loop)}
+function loadStage(){x=65;y=390;vx=0;vy=0;gateX=900;paused=false;let s=stages[stage];$("stageLabel").textContent=`Chặng ${stage+1}/5`; $("stageTitle").textContent=s.title;$("stageStory").textContent=s.story;$("heartLabel").textContent="❤ "+hearts;$("gemLabel").textContent="✦ "+gems;$("progressBar").style.width=(stage/5*100)+"%";hazards=[{x:260,w:60},{x:510,w:70},{x:720,w:60}];foes=[{x:400,y:430,dir:1},{x:650,y:430,dir:-1}];coins=[{x:190,y:360,t:0},{x:350,y:300,t:0},{x:580,y:350,t:0},{x:780,y:300,t:0}];renderArmor();}
+function renderArmor(){$("armorList").innerHTML=armor.map((a,i)=>`<span class="${profile.armor.includes(i)?"on":""}">${profile.armor.includes(i)?"✦ ":""}${a}</span>`).join("")}
+function rect(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(x,y,w,h)}
+function draw(){let g=ctx.createLinearGradient(0,0,0,540);g.addColorStop(0,["#9bd1dc","#a7b9d9","#5a668f","#8bb4aa","#edb96e"][stage]);g.addColorStop(1,"#f5e3bd");ctx.fillStyle=g;ctx.fillRect(0,0,960,540);
+ // distant hills
+ ctx.fillStyle="#ffffff33";for(let i=0;i<7;i++){ctx.beginPath();ctx.arc(i*180+40,240,90,Math.PI,0);ctx.fill()}
+ rect(0,470,960,70,"#344b48");rect(0,470,960,8,"#f5d18a");
+ // platforms
+ [[160,400,100,14],[340,345,110,14],[540,400,100,14],[740,340,100,14]].forEach(p=>rect(...p,"#755e49"));
+ hazards.forEach(h=>{ctx.fillStyle="#873f4c";ctx.beginPath();ctx.moveTo(h.x,470);ctx.lineTo(h.x+15,438);ctx.lineTo(h.x+30,470);ctx.lineTo(h.x+45,438);ctx.lineTo(h.x+h.w,470);ctx.fill()});
+ foes.forEach(f=>{ctx.font="34px sans-serif";ctx.fillText(stage===1?"👹":stage===2?"👥":"🦇",f.x,f.y)});
+ coins.forEach(c=>{if(!c.got){ctx.font="25px sans-serif";ctx.fillText("✦",c.x,c.y+Math.sin(c.t)*5)}});
+ // gate
+ ctx.fillStyle="#ffeaa0";ctx.shadowColor="#fff2a8";ctx.shadowBlur=25;ctx.fillRect(gateX,350,16,120);ctx.shadowBlur=0;ctx.font="32px sans-serif";ctx.fillText("🚪",gateX-10,345);
+ // player
+ ctx.font="42px sans-serif";ctx.fillText(profile.armor.length>=5?"🛡️":"🧒",x,y+4);ctx.font="15px sans-serif";ctx.fillStyle="#17213b";ctx.fillText(profile.name,x-5,y+24);
+}
+function update(dt){if(paused)return;let speed=260;vx=0;if(keys.left)vx=-speed;if(keys.right)vx=speed;x+=vx*dt; if((keys.jump||keys.up)&&onGround){vy=-570;onGround=false}vy+=1250*dt;y+=vy*dt;onGround=false;
+ if(y>=430){y=430;vy=0;onGround=true}
+ [[160,400,100],[340,345,110],[540,400,100],[740,340,100]].forEach(([px,py,pw])=>{if(vy>=0&&x+25>px&&x<px+pw&&y>=py-18&&y<py+12){y=py-18;vy=0;onGround=true}});
+ x=Math.max(0,Math.min(925,x));
+ hazards.forEach(h=>{if(x+26>h.x&&x<h.x+h.w&&y>410&&y<475){hit()}});
+ foes.forEach(f=>{f.x+=f.dir*45*dt;if(f.x<300||f.x>800)f.dir*=-1;if(Math.abs(x-f.x)<28&&Math.abs(y-f.y)<45)hit()});
+ coins.forEach(c=>{c.t+=dt*4;if(!c.got&&Math.abs(x-c.x)<28&&Math.abs(y-c.y)<45){c.got=true;gems++;$("gemLabel").textContent="✦ "+gems}});
+ if(x>gateX-22){completeStage()}
+}
+function hit(){hearts--; $("heartLabel").textContent="❤ "+hearts;x=70;y=390;vy=0;if(hearts<=0){hearts=3;$("heartLabel").textContent="❤ 3";}}
+function loop(t){if(!last)last=t;let dt=Math.min((t-last)/1000,.032);last=t;update(dt);draw();raf=requestAnimationFrame(loop)}
+function completeStage(){cancelAnimationFrame(raf);profile.gems=gems;profile.stage=stage;save();$("reflectionTitle").textContent=stage===4?"Lời nhắn cuối hành trình":"Dừng lại để lắng nghe mình";$("reflectionPrompt").textContent=stages[stage].prompt;$("reflectionLabel").textContent=stages[stage].label;$("reflectionText").value="";$("reflectionModal").classList.add("show")}
+function saveReflection(skip){let val=$("reflectionText").value.trim();if(!skip&&val){profile.entries.push({stage:stage+1,title:stages[stage].title,text:val,date:new Date().toLocaleDateString("vi-VN")})}
+ if(!profile.armor.includes(stage))profile.armor.push(stage);profile.stage=stage+1;profile.gems=gems;save();$("reflectionModal").classList.remove("show");if(stage<4){stage++;loadStage();last=0;raf=requestAnimationFrame(loop)}else{profile.stage=5;save();$("progressBar").style.width="100%";$("finishText").textContent=`${profile.name}, bạn đã thu thập ${profile.armor.length}/5 mảnh giáp và viết ${profile.entries.length} lời nhắn cho chính mình.`;show("finish")}}
+function journal(){let entries=profile.entries||[];$("journalEntries").innerHTML=entries.length?entries.map(e=>`<div class="journalitem"><b>Chặng ${e.stage}: ${escapeHtml(e.title)}</b><div class="hint">${e.date}</div><p>${escapeHtml(e.text)}</p></div>`).join(""):'<p>Bạn chưa lưu lời nhắn nào. Bạn có thể viết khi cảm thấy sẵn sàng.</p>';$("journalModal").classList.add("show")}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function hold(id,key){let b=$(id);b.addEventListener("pointerdown",e=>{e.preventDefault();keys[key]=true});["pointerup","pointercancel","pointerleave"].forEach(ev=>b.addEventListener(ev,()=>keys[key]=false))}
+hold("leftBtn","left");hold("rightBtn","right");$("jumpBtn").addEventListener("pointerdown",e=>{e.preventDefault();keys.jump=true;setTimeout(()=>keys.jump=false,100)});
+window.addEventListener("keydown",e=>{if(["ArrowLeft","a","A"].includes(e.key))keys.left=true;if(["ArrowRight","d","D"].includes(e.key))keys.right=true;if([" ","ArrowUp","w","W"].includes(e.key)){keys.jump=true;e.preventDefault()}});
+window.addEventListener("keyup",e=>{if(["ArrowLeft","a","A"].includes(e.key))keys.left=false;if(["ArrowRight","d","D"].includes(e.key))keys.right=false;if([" ","ArrowUp","w","W"].includes(e.key))keys.jump=false});
+$("createBtn").onclick=create;$("loginShow").onclick=()=>show("login");$("backWelcome").onclick=()=>show("welcome");$("loginBtn").onclick=login;
+$("saveReflection").onclick=()=>saveReflection(false);$("skipReflection").onclick=()=>saveReflection(true);$("journalBtn").onclick=journal;$("reviewJournal").onclick=journal;$("closeJournal").onclick=()=>$("journalModal").classList.remove("show");
+$("pauseBtn").onclick=()=>{paused=true;$("pauseModal").classList.add("show")};$("resumeBtn").onclick=()=>{paused=false;$("pauseModal").classList.remove("show")};
+$("logoutBtn").onclick=()=>{cancelAnimationFrame(raf);profile=null;show("welcome")};$("restartBtn").onclick=()=>{profile.stage=0;profile.armor=[];profile.entries=[];profile.gems=0;save();stage=0;gems=0;startGame()};
+})();
+</script>
+</body></html>
