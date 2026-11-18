@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#14233d">
+<title>Hành Trình Chiến Binh — V4</title>
+<style>
+:root{--ink:#26334b;--gold:#efc66f;--muted:#6c7890;--line:#e1e5eb;--cream:#fff9ed}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#344d75,#14233d 68%);font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);min-height:100vh}.wrap{max-width:850px;margin:auto;padding:16px}.top{color:#fff;display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 3px 16px}.brand{font-weight:900;letter-spacing:.04em}.brand b{color:var(--gold)}.panel{background:var(--cream);border-radius:24px;padding:clamp(17px,4vw,32px);box-shadow:0 18px 55px #0005}.screen{display:none}.screen.active{display:block}.center{text-align:center}h1{font-size:clamp(29px,5vw,43px);margin:8px 0}h2{margin:0 0 9px}.muted{color:var(--muted);line-height:1.6}.hero{font-size:60px}.narrow{max-width:650px;margin:10px auto 22px}button{border:0;border-radius:13px;padding:12px 17px;font:inherit;font-weight:800;background:var(--gold);color:#392d18;cursor:pointer}button.alt{background:#e9edf4;color:#263653}button.danger{background:#fbe4e4;color:#8d2525}.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:18px 0}.choice{background:#fff;border:2px solid var(--line);border-radius:15px;padding:14px;text-align:left;color:var(--ink);min-height:82px}.choice.selected{border-color:#c18a27;background:#fff1cc}.choice small{display:block;color:var(--muted);font-weight:500;margin-top:5px}textarea,input{width:100%;border:1.5px solid #cfd7e4;border-radius:14px;padding:14px;font:inherit;line-height:1.6}textarea{min-height:130px;resize:vertical}.notice{background:#fff2d5;border:1px solid #ead39a;padding:12px;border-radius:12px;color:#674c19;font-size:13px;line-height:1.5;margin:12px 0}.card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:15px;margin:10px 0;line-height:1.6}.meta{font-size:12px;color:var(--muted);margin-bottom:7px}.entrytext{white-space:pre-wrap;overflow-wrap:anywhere}.footer{color:#c6d0df;text-align:center;font-size:12px;padding:18px}.sortbar,.post-actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.sortbar button,.post-actions button{font-size:13px;padding:9px 11px}.replylabel{font-weight:800;color:#72521a}.small{font-size:12px}.future-item{border-left:3px solid #efc66f;padding:9px 12px;margin:10px 0;background:#fffaf0;border-radius:8px}.pill{display:inline-block;border-radius:20px;padding:3px 9px;background:#eef2f7;font-size:11px;color:#52617a}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.wrap{padding:8px}.panel{border-radius:18px}}
+</style>
+</head>
+<body><div class="wrap">
+<header class="top"><div class="brand">✦ HÀNH TRÌNH <b>CHIẾN BINH · V4</b></div><button class="alt" onclick="go('wall')">💬 Bức tường cộng đồng</button></header>
+<main class="panel">
+<section id="home" class="screen active center">
+<div class="hero">🛡️</div><h1>Bạn không đơn độc</h1>
+<p class="muted narrow">Có thể hôm nay bạn đang gặp khó khăn. Một ngày nào đó, phiên bản tốt hơn của bạn có thể quay lại kể rằng mình đã vượt qua như thế nào.</p>
+<div style="max-width:440px;margin:16px auto;text-align:left"><label for="nickname">Bí danh của bạn</label><input id="nickname" maxlength="24" placeholder="Ví dụ: Mây, Sóc, Mặt Trời..."><p class="muted small">Hãy dùng bí danh, không dùng họ tên thật, tên trường/lớp hay thông tin liên hệ.</p></div>
+<div class="actions"><button onclick="startShare()">✍️ Chia sẻ ngay</button><button class="alt" onclick="go('wall')">💬 Xem bức tường cộng đồng</button></div>
+<div class="actions"><button class="alt" onclick="showJournal()">📖 Nhật ký của tôi</button></div>
+</section>
+<section id="classify" class="screen">
+<h2>Điều gì đang khiến bạn nặng lòng?</h2><p class="muted">Chọn nhóm gần với trải nghiệm của bạn nhất. Không có lựa chọn đúng hay sai.</p>
+<div class="grid" id="categories"></div><div class="actions"><button onclick="toDiary()">Tiếp tục</button><button class="alt" onclick="pick('other')">Chưa biết gọi tên</button></div><p id="classErr" class="muted center"></p>
+</section>
+<section id="diary" class="screen">
+<h2 id="diaryTitle">Dành một chút thời gian cho mình</h2><p class="muted" id="diaryPrompt"></p>
+<label for="diaryText">Bạn muốn kể điều gì?</label><textarea id="diaryText" maxlength="3000" placeholder="Bạn có thể viết tự do. Không cần viết hay, không cần viết dài..."></textarea>
+<div class="meta"><span id="count">0</span>/3000 ký tự</div>
+<div class="notice">Nhật ký sẽ được lưu riêng ngay trên trình duyệt này. Bạn có thể quay lại bất cứ lúc nào để viết lời nhìn lại khi đã sẵn sàng.</div>
+<div class="actions"><button onclick="saveDiary()">Lưu nhật ký</button><button class="alt" onclick="go('classify')">Quay lại</button></div>
+</section>
+<section id="saved" class="screen center">
+<div class="hero">🌱</div><h2>Nhật ký đã được lưu</h2>
+<p class="muted narrow">... ở phiên bản tốt hơn trong tương lai, hãy quay lại đây điểm danh khi bạn đã sẵn sàng hoặc đã vượt qua được khó khăn này nhé!</p>
+<div class="actions"><button onclick="showJournal()">📖 Mở nhật ký của tôi</button><button class="alt" onclick="go('wall')">💬 Bức tường cộng đồng</button><button class="alt" onclick="go('home')">Về trang đầu</button></div>
+</section>
+<section id="wall" class="screen">
+<h2>💬 Bức tường cộng đồng</h2><p class="muted">Những câu chuyện thật từ những người từng gặp khó khăn và những điều họ đã làm để bước tiếp.</p>
+<div class="notice">Bản HTML độc lập này lưu bài viết trên trình duyệt hiện tại. Để người dùng ở các điện thoại khác nhau cùng nhìn thấy bài đăng, thả cảm xúc và xóa bài đồng bộ, website cần được kết nối cơ sở dữ liệu trực tuyến (ví dụ Supabase).</div>
+<div class="sortbar"><button onclick="wallMode='popular';renderWall()">🔥 Được quan tâm</button><button class="alt" onclick="wallMode='new';renderWall()">🕒 Mới nhất</button></div>
+<div id="wallList"></div>
+<div class="actions"><button class="alt" onclick="go('home')">Về trang đầu</button><button onclick="showJournal()">📖 Nhật ký của tôi</button></div>
+</section>
+<section id="journal" class="screen">
+<h2>📖 Nhật ký của tôi</h2><p class="muted">Mỗi lời tâm sự và từng lần nhìn lại được lưu riêng. Bạn có thể xóa từng mục mà không làm mất những mục khác.</p><div id="journalList"></div>
+<div class="actions"><button class="alt" onclick="go('home')">Về trang đầu</button><button class="alt" onclick="go('wall')">Bức tường cộng đồng</button></div>
+</section>
+</main><div class="footer">Hãy dùng bí danh và tránh chia sẻ thông tin có thể nhận diện bạn. Nếu đang gặp nguy hiểm, hãy tìm người lớn đáng tin cậy hoặc dịch vụ hỗ trợ khẩn cấp tại nơi bạn sống.</div></div>
+<script>
+const cats=[
+{id:"study",icon:"📚",name:"Học tập và thi cử",desc:"Điểm số, thành tích, kỳ vọng"},
+{id:"comparison",icon:"🪞",name:"So sánh bản thân",desc:"Cảm giác thua kém bạn bè"},
+{id:"appearance",icon:"🌷",name:"Ngoại hình và tự tin",desc:"Vóc dáng, nhan sắc, tự ti"},
+{id:"family",icon:"🏡",name:"Gia đình",desc:"Kỳ vọng, mâu thuẫn, thiếu thấu hiểu"},
+{id:"friends",icon:"🫂",name:"Bạn bè và tình cảm",desc:"Cô đơn, bị bỏ rơi, mối quan hệ"},
+{id:"future",icon:"🌅",name:"Tương lai",desc:"Chọn ngành, nghề nghiệp, sợ thất bại"},
+{id:"self",icon:"💭",name:"Áp lực từ chính mình",desc:"Cầu toàn, tự trách, sợ sai"},
+{id:"other",icon:"✨",name:"Một điều khác",desc:"Chưa biết gọi tên cảm xúc"}
+];
+const prompts={
+study:"Khi nghĩ về học tập hoặc điểm số, điều gì đang khiến bạn áp lực nhất?",
+comparison:"Bạn thường so sánh mình với ai hoặc điều gì? Khoảnh khắc nào khiến bạn cảm thấy mình chưa đủ tốt?",
+appearance:"Điều gì về ngoại hình khiến bạn bận tâm? Bạn mong người khác nhìn nhận mình như thế nào?",
+family:"Điều gì trong mối quan hệ với gia đình khiến bạn khó nói thành lời?",
+friends:"Có chuyện gì xảy ra trong một mối quan hệ khiến bạn buồn hoặc thấy cô đơn?",
+future:"Điều gì về tương lai khiến bạn lo lắng nhất?",
+self:"Bạn thường đặt ra yêu cầu nào quá khắt khe với bản thân?",
+other:"Bạn có thể kể điều đang diễn ra trong lòng mình mà không cần gọi tên vấn đề."
+};
+let selected=null,wallMode="popular",currentEntryId=null;
+function $(id){return document.getElementById(id)}
+function go(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));$(id).classList.add("active");if(id==="wall")renderWall();if(id==="journal")renderJournal()}
+function getNickname(){return ($("nickname").value.trim()||localStorage.getItem("warrior_nickname")||"Chiến binh").slice(0,24)}
+function startShare(){const n=$("nickname").value.trim();if(n)localStorage.setItem("warrior_nickname",n);else $("nickname").value=localStorage.getItem("warrior_nickname")||"";renderCats();go("classify")}
+function renderCats(){$("categories").innerHTML=cats.map(c=>`<button class="choice ${selected===c.id?"selected":""}" onclick="pick('${c.id}')">${c.icon} <b>${c.name}</b><small>${c.desc}</small></button>`).join("")}
+function pick(id){selected=id;renderCats();$("classErr").textContent=""}
+function toDiary(){if(!selected){$("classErr").textContent="Hãy chọn một nhóm vấn đề.";return}$("diaryPrompt").textContent=prompts[selected];$("diaryTitle").textContent=cats.find(c=>c.id===selected).name;go("diary")}
+$("diaryText").addEventListener("input",()=>{$("count").textContent=$("diaryText").value.length});
+function entries(){try{return JSON.parse(localStorage.getItem("warrior_v4_entries")||"[]")}catch(e){return []}}
+function saveEntries(a){localStorage.setItem("warrior_v4_entries",JSON.stringify(a))}
+function posts(){try{return JSON.parse(localStorage.getItem("warrior_v4_posts")||"[]")}catch(e){return []}}
+function savePosts(a){localStorage.setItem("warrior_v4_posts",JSON.stringify(a))}
+function saveDiary(){
+ const text=$("diaryText").value.trim();if(!text){alert("Bạn hãy viết vài dòng trước khi lưu nhé.");return}
+ const now=new Date().toISOString(),id=(crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random());
+ const e={id,owner:getNickname(),category:selected,text,createdAt:now,reflections:[]};
+ const a=entries();a.push(e);saveEntries(a);currentEntryId=id;$("diaryText").value="";$("count").textContent="0";go("saved");
+}
+function showJournal(){go("journal")}
+function fmt(iso){try{return new Date(iso).toLocaleString("vi-VN",{dateStyle:"medium",timeStyle:"short"})}catch(e){return ""}}
+function renderJournal(){
+ const a=entries().slice().reverse();
+ $("journalList").innerHTML=a.length?a.map(e=>{
+ const refl=(e.reflections||[]).map(r=>`<div class="future-item"><div class="meta">Lần nhìn lại · ${fmt(r.createdAt)}</div><div class="entrytext">${escapeHtml(r.text)}</div><div class="actions"><button class="alt" onclick="shareJourney('${e.id}','${r.id}')">📣 Chia sẻ hành trình đã vượt qua</button><button class="danger" onclick="deleteReflection('${e.id}','${r.id}')">Xóa lời nhìn lại này</button></div></div>`).join(""):"<p class='muted'>Chưa có lời nhìn lại nào.</p>";
+ return `<article class="card"><div class="meta">${cats.find(c=>c.id===e.category)?.name||"Chưa phân loại"} · ${fmt(e.createdAt)} · Bí danh: ${escapeHtml(e.owner)}</div><b>🌧️ Lời tâm sự ban đầu</b><div class="entrytext">${escapeHtml(e.text)}</div><label for="reflection-${e.id}">🌤️ Khi đã sẵn sàng, bạn muốn quay lại kể điều gì?</label><textarea id="reflection-${e.id}" maxlength="2000" placeholder="Mày thấy chưa, tưởng đau lắm, khó lắm, vậy mà chẳng phải mày cũng làm được rồi sao? Tao rất tự hào về mày. Hãy viết câu chuyện thật của bạn..."></textarea><div class="actions"><button onclick="saveReflection('${e.id}')">Lưu lời nhìn lại</button><button class="danger" onclick="deleteEntry('${e.id}')">🗑️ Xóa riêng nhật ký này</button></div><div class="replylabel">💛 Những lần bạn quay lại điểm danh</div>${refl||"<p class='muted small'>Bạn chưa thêm lời nhìn lại nào. Khi đã sẵn sàng, hãy viết ở đây.</p>"}</article>`
+ }).join(""):"<p class='muted'>Bạn chưa có mục nhật ký nào.</p>";
+}
+function saveReflection(id){const a=entries(),e=a.find(x=>x.id===id),t=$("reflection-"+id).value.trim();if(!e||!t){alert("Hãy viết lời nhìn lại trước khi lưu.");return}e.reflections=e.reflections||[];e.reflections.push({id:(crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random()),text:t,createdAt:new Date().toISOString()});saveEntries(a);renderJournal();alert("Đã lưu lời nhìn lại cùng ngày giờ. Bạn có thể quay lại xem hoặc chia sẻ sau.");}
+function deleteReflection(eid,rid){if(!confirm("Xóa riêng lời nhìn lại này? Nhật ký ban đầu và các lời nhìn lại khác vẫn được giữ."))return;const a=entries(),e=a.find(x=>x.id===eid);if(e){e.reflections=(e.reflections||[]).filter(r=>r.id!==rid);saveEntries(a);renderJournal()}}
+function deleteEntry(id){if(!confirm("Xóa riêng nhật ký này và các lời nhìn lại thuộc nhật ký? Những nhật ký khác sẽ không bị ảnh hưởng."))return;saveEntries(entries().filter(e=>e.id!==id));renderJournal()}
+function shareJourney(eid,rid){
+ const a=entries(),e=a.find(x=>x.id===eid),r=e&&(e.reflections||[]).find(x=>x.id===rid);if(!e||!r)return;
+ const p=posts();p.push({id:(crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random()),owner:e.owner,category:e.category,original:e.text,reflection:r.text,createdAt:new Date().toISOString(),entryId:e.id,reflectionId:r.id,via:0,heart:0,reactors:{via:[],heart:[]}});
+ savePosts(p);renderJournal();alert("Đã chia sẻ hành trình lên bức tường cộng đồng trên trình duyệt này.");go("wall");
+}
+function renderWall(){
+ let p=posts().slice();p.sort((a,b)=>wallMode==="popular"?(b.via+b.heart)-(a.via+a.heart):new Date(b.createdAt)-new Date(a.createdAt));
+ $("wallList").innerHTML=p.length?p.map(x=>`<article class="card"><div class="meta">${cats.find(c=>c.id===x.category)?.icon||"✨"} ${cats.find(c=>c.id===x.category)?.name||"Cộng đồng"} · <b>${escapeHtml(x.owner)}</b> · Đăng lúc ${fmt(x.createdAt)}</div><b>🌧️ Khi mình còn gặp khó khăn</b><div class="entrytext">${escapeHtml(x.original)}</div><div class="replylabel" style="margin-top:14px">🌤️ Khi mình đã vượt qua</div><div class="entrytext">${escapeHtml(x.reflection)}</div><div class="post-actions"><button class="alt" onclick="react('${x.id}','via')">🍀 Nhả vía may mắn · ${x.via}</button><button class="alt" onclick="react('${x.id}','heart')">💗 Đồng cảm · ${x.heart}</button>${x.owner===getNickname()?`<button class="danger" onclick="deletePost('${x.id}')">🗑️ Xóa chia sẻ của tôi</button>`:""}</div></article>`).join(""):"<p class='muted'>Bức tường chưa có hành trình nào được chia sẻ. Khi ai đó sẵn sàng kể lại hành trình đã vượt qua, câu chuyện sẽ xuất hiện ở đây.</p>";
+}
+function react(id,type){
+ const p=posts(),x=p.find(v=>v.id===id);if(!x)return;
+ const actor=getNickname(),arr=x.reactors&&x.reactors[type]||[];
+ const mine=arr.filter(v=>v===actor).length;
+ if(mine>=3){alert("Bạn đã dùng đủ 3 lượt cảm xúc loại này cho bài viết.");return}
+ arr.push(actor);x.reactors=x.reactors||{via:[],heart:[]};x.reactors[type]=arr;x[type]++;savePosts(p);renderWall();
+}
+function deletePost(id){if(!confirm("Xóa bài chia sẻ này khỏi bức tường? Nhật ký gốc và lời nhìn lại đã lưu vẫn được giữ."))return;savePosts(posts().filter(p=>p.id!==id));renderWall()}
+function escapeHtml(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+$("nickname").value=localStorage.getItem("warrior_nickname")||"";renderCats();
+</script></body></html>
