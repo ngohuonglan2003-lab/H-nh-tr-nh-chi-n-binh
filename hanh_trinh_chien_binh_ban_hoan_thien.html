@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#14233d">
+<title>Hành Trình Chiến Binh — Người bạn đồng hành</title>
+<style>
+:root{--ink:#26334b;--gold:#efc66f;--muted:#6c7890;--line:#e1e5eb;--cream:#fff9ed}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#344d75,#14233d 68%);font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);min-height:100vh}.wrap{max-width:850px;margin:auto;padding:16px}.top{color:#fff;display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 3px 16px}.brand{font-weight:900;letter-spacing:.04em}.brand b{color:var(--gold)}.panel{background:var(--cream);border-radius:24px;padding:clamp(17px,4vw,32px);box-shadow:0 18px 55px #0005}.screen{display:none}.screen.active{display:block}.center{text-align:center}h1{font-size:clamp(29px,5vw,43px);margin:8px 0}h2{margin:0 0 9px}.muted{color:var(--muted);line-height:1.6}.hero{font-size:60px}.narrow{max-width:650px;margin:10px auto 22px}button{border:0;border-radius:13px;padding:12px 17px;font:inherit;font-weight:800;background:var(--gold);color:#392d18;cursor:pointer}button.alt{background:#e9edf4;color:#263653}button.danger{background:#fbe4e4;color:#8d2525}.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:18px 0}.choice{background:#fff;border:2px solid var(--line);border-radius:15px;padding:14px;text-align:left;color:var(--ink);min-height:82px}.choice.selected{border-color:#c18a27;background:#fff1cc}.choice small{display:block;color:var(--muted);font-weight:500;margin-top:5px}textarea{width:100%;min-height:150px;border:1.5px solid #cfd7e4;border-radius:14px;padding:14px;font:inherit;line-height:1.6;resize:vertical}.notice{background:#fff2d5;border:1px solid #ead39a;padding:12px;border-radius:12px;color:#674c19;font-size:13px;line-height:1.5;margin:12px 0}.message{background:#fff;border:1px solid var(--line);border-radius:15px;padding:16px;line-height:1.7;white-space:pre-wrap}.card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:15px;margin:10px 0;line-height:1.6}.meta{font-size:12px;color:var(--muted);margin-bottom:7px}label{display:block;font-weight:750;margin:13px 0 7px}.counter{text-align:right;color:var(--muted);font-size:12px;margin-top:5px}input[type=checkbox]{width:auto;transform:scale(1.15);margin-right:8px}.footer{color:#c6d0df;text-align:center;font-size:12px;padding:18px}.sortbar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.sortbar button{font-size:13px;padding:9px 12px}.replylabel{font-weight:800;color:#72521a}.post-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.post-actions button{font-size:13px;padding:9px 11px}.entrytext{white-space:pre-wrap}.small{font-size:12px}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.wrap{padding:8px}.panel{border-radius:18px}}
+</style>
+</head>
+<body><div class="wrap">
+<header class="top"><div class="brand">✦ HÀNH TRÌNH <b>CHIẾN BINH</b></div><button class="alt" onclick="go('wall')">💬 Bức tường cộng đồng</button></header>
+<main class="panel">
+<section id="home" class="screen active center">
+<div class="hero">🛡️</div><h1>Bạn không đơn độc</h1>
+<p class="muted narrow">Mỗi người có một câu chuyện khác nhau. Bạn có thể chia sẻ điều đang khiến mình nặng lòng hoặc ghé thăm bức tường cộng đồng để đọc những câu chuyện của người khác.</p>
+<div class="actions"><button onclick="go('classify')">✍️ Chia sẻ ngay</button><button class="alt" onclick="go('wall')">💬 Xem bức tường cộng đồng</button></div>
+<div class="actions"><button class="alt" onclick="showJournal()">📖 Nhật ký của tôi</button></div>
+</section>
+<section id="classify" class="screen">
+<h2>Điều gì đang khiến bạn nặng lòng?</h2><p class="muted">Chọn nhóm gần với trải nghiệm của bạn nhất. Không có lựa chọn đúng hay sai.</p>
+<div class="grid" id="categories"></div><div class="actions"><button onclick="toDiary()">Tiếp tục</button><button class="alt" onclick="pick('other')">Chưa biết gọi tên</button></div><p id="classErr" class="muted center"></p>
+</section>
+<section id="diary" class="screen">
+<h2 id="diaryTitle">Dành một chút thời gian cho mình</h2><p class="muted" id="diaryPrompt"></p>
+<label for="diaryText">Bạn muốn kể điều gì?</label><textarea id="diaryText" maxlength="3000" placeholder="Bạn có thể viết tự do. Không cần viết hay, không cần viết dài. Hãy viết điều thật sự đang ở trong lòng bạn..."></textarea>
+<div class="counter"><span id="count">0</span>/3000 ký tự</div>
+<div class="notice">Khi nhấn “Gửi và nhận lời nhắn”, nhật ký sẽ tự động lưu vào mục Nhật ký của tôi trên trình duyệt này. Sau đó bạn mới quyết định có muốn chia sẻ lên tường cộng đồng hay không. Không ghi họ tên, trường/lớp, số điện thoại hoặc tài khoản mạng xã hội.</div>
+<div class="actions"><button onclick="respond()">Gửi và nhận lời nhắn</button><button class="alt" onclick="go('classify')">Quay lại</button><button class="alt" onclick="go('home')">Để lúc khác</button></div>
+</section>
+<section id="reply" class="screen">
+<div class="center" style="font-size:42px">💛</div><h2 class="center">Một lời nhắn dành cho bạn</h2><p class="muted center" id="replyIntro"></p><div class="message" id="replyText"></div>
+<div class="notice">Đây là lời động viên được biên soạn sẵn và chọn theo nhóm vấn đề bạn đã chia sẻ, không phải phản hồi trực tiếp từ ChatGPT.</div>
+<div class="card"><b>Bạn muốn làm gì với câu chuyện này?</b><p class="muted small">Nhật ký đã được lưu riêng tự động. Việc chia sẻ lên cộng đồng là hoàn toàn tự nguyện.</p></div>
+<div class="actions"><button onclick="shareCurrent()">💬 Đồng ý chia sẻ lên tường</button><button class="alt" onclick="finishPrivate()">Giữ riêng tư</button></div>
+</section>
+<section id="saved" class="screen center">
+<div class="hero">💛</div><h2 id="savedTitle">Nhật ký đã được lưu</h2><p class="muted">Bạn có thể đọc lại bất cứ lúc nào trên thiết bị và trình duyệt này.</p>
+<div class="actions"><button onclick="showJournal()">📖 Nhật ký của tôi</button><button class="alt" onclick="go('wall')">💬 Bức tường cộng đồng</button><button class="alt" onclick="go('classify')">Chia sẻ điều khác</button><button class="alt" onclick="go('home')">Về trang đầu</button></div>
+</section>
+<section id="wall" class="screen">
+<h2>💬 Bức tường cộng đồng</h2><p class="muted">Một nơi để đọc những câu chuyện, gửi lời chúc may mắn và thể hiện sự đồng cảm.</p>
+<div class="notice">Các bài viết bên dưới là nội dung minh họa. Bản thử nghiệm này chưa có cơ sở dữ liệu trực tuyến, nên bài viết và lượt tương tác chưa được chia sẻ giữa các thiết bị. Bài đăng thật cần được ẩn danh và kiểm duyệt trước khi công khai.</div>
+<div class="sortbar"><button onclick="wallMode='popular';renderWall()">🔥 Được quan tâm</button><button class="alt" onclick="wallMode='new';renderWall()">🕒 Mới nhất</button></div><div id="wallList"></div>
+<div class="actions"><button class="alt" onclick="go('home')">Về trang đầu</button><button onclick="showJournal()">Nhật ký của tôi</button></div>
+</section>
+<section id="journal" class="screen">
+<h2>📖 Nhật ký của tôi</h2><p class="muted">Nhật ký và lời nhắn tương lai chỉ lưu trên trình duyệt hiện tại trong bản thử nghiệm.</p><div id="journalList"></div>
+<div class="actions"><button class="alt" onclick="go('home')">Về trang đầu</button></div>
+</section>
+</main><div class="footer">Bạn có quyền bỏ qua câu hỏi, dừng lại hoặc tìm một người đáng tin cậy để trò chuyện. Nếu đang gặp nguy hiểm, hãy tìm người lớn đáng tin cậy hoặc dịch vụ hỗ trợ khẩn cấp tại nơi bạn sống.</div></div>
+<script>
+const cats=[
+{id:"study",icon:"📚",name:"Học tập và thi cử",desc:"Điểm số, thành tích, kỳ vọng"},
+{id:"comparison",icon:"🪞",name:"So sánh bản thân",desc:"Cảm giác thua kém bạn bè"},
+{id:"appearance",icon:"🌷",name:"Ngoại hình và tự tin",desc:"Vóc dáng, nhan sắc, tự ti"},
+{id:"family",icon:"🏡",name:"Gia đình",desc:"Kỳ vọng, mâu thuẫn, thiếu thấu hiểu"},
+{id:"friends",icon:"🫂",name:"Bạn bè và tình cảm",desc:"Cô đơn, bị bỏ rơi, mối quan hệ"},
+{id:"future",icon:"🌅",name:"Tương lai",desc:"Chọn ngành, nghề nghiệp, sợ thất bại"},
+{id:"self",icon:"💭",name:"Áp lực từ chính mình",desc:"Cầu toàn, tự trách, sợ sai"},
+{id:"other",icon:"✨",name:"Một điều khác",desc:"Chưa biết gọi tên cảm xúc"}
+];
+const prompts={
+study:"Khi nghĩ về học tập hoặc điểm số, điều gì đang khiến bạn áp lực nhất? Bạn đang sợ điều gì sẽ xảy ra nếu kết quả không như mong muốn?",
+comparison:"Bạn thường so sánh mình với ai hoặc điều gì? Khoảnh khắc nào khiến bạn cảm thấy mình chưa đủ tốt?",
+appearance:"Điều gì về ngoại hình khiến bạn bận tâm? Bạn mong người khác nhìn nhận mình như thế nào?",
+family:"Điều gì trong mối quan hệ với gia đình khiến bạn khó nói thành lời? Bạn mong người thân hiểu điều gì ở mình?",
+friends:"Có chuyện gì xảy ra trong một mối quan hệ khiến bạn buồn hoặc thấy cô đơn? Bạn cần điều gì lúc này?",
+future:"Điều gì về tương lai khiến bạn lo lắng nhất? Có lựa chọn hay kỳ vọng nào đang làm bạn thấy mắc kẹt?",
+self:"Bạn thường đặt ra yêu cầu nào quá khắt khe với bản thân? Nếu được nhẹ nhàng hơn với mình, bạn muốn bắt đầu từ đâu?",
+other:"Bạn có thể kể điều đang diễn ra trong lòng mình mà không cần gọi tên vấn đề. Điều gì bạn mong có người lắng nghe nhất?"
+};
+// 40 lời nhắn: 5 lời cho mỗi nhóm vấn đề. Chọn ngẫu nhiên trong đúng nhóm đã phân loại.
+const support={
+study:[
+"Điểm số có thể phản ánh kết quả của một bài kiểm tra, nhưng không thể đo hết sự cố gắng, lòng tốt hay tiềm năng của bạn. Một lần chưa tốt không có nghĩa là bạn không thể tiến bộ.",
+"Mình biết cảm giác học rất nhiều mà kết quả vẫn chưa như mong đợi có thể làm bạn nản lòng. Hãy cho mình một chút thời gian nghỉ, rồi chọn đúng một phần nhỏ để bắt đầu lại. Bạn không cần sửa mọi thứ trong một ngày.",
+"Bạn không cần phải đứng đầu lớp mới có giá trị. Việc học là hành trình tích lũy, không phải cuộc đua mà ai về trước mới xứng đáng được công nhận.",
+"Nếu hôm nay bạn đang mệt, nghỉ ngơi không phải là lười biếng. Một tâm trí được nghỉ ngơi cũng cần thiết như những giờ học chăm chỉ.",
+"Bạn có thể buồn vì một kết quả chưa tốt, nhưng đừng dùng kết quả ấy để kết luận về cả tương lai. Hãy nhìn nó như thông tin giúp bạn tìm cách học phù hợp hơn."
+],
+comparison:[
+"Bạn đang nhìn thấy một đoạn nổi bật trong hành trình của người khác, nhưng lại đem so với cả những ngày khó khăn của mình. Hai điều ấy không công bằng với bạn.",
+"Không ai có cùng điểm xuất phát, điều kiện và nhịp trưởng thành. Bạn không chậm chỉ vì người khác đang đi nhanh hơn.",
+"Thay vì hỏi mình kém ai, thử hỏi hôm nay mình đã tiến thêm được điều gì dù rất nhỏ. Những bước nhỏ vẫn là tiến bộ thật.",
+"Bạn không cần trở thành bản sao của người mà bạn ngưỡng mộ. Bạn có thể học điều tốt từ họ mà vẫn giữ con đường và cá tính riêng.",
+"Có những thành tựu của bạn mà người khác không nhìn thấy: đã cố gắng, đã đứng dậy, đã tiếp tục dù khó khăn. Đừng quên ghi nhận chúng."
+],
+appearance:[
+"Bạn không cần phải yêu mọi điểm trên ngoại hình của mình ngay hôm nay. Nhưng bạn có thể bắt đầu bằng việc không nói những lời làm tổn thương chính mình.",
+"Cơ thể bạn không phải một món đồ để người khác chấm điểm. Bạn xứng đáng được tôn trọng ở mọi vóc dáng, màu da và dáng vẻ.",
+"Một lời nhận xét thiếu tế nhị không phải sự thật tuyệt đối về bạn. Bạn có quyền không lấy tiêu chuẩn của người khác làm thước đo giá trị bản thân.",
+"Hãy thử chăm sóc cơ thể vì nó xứng đáng được khỏe mạnh và dễ chịu, chứ không phải vì bạn phải đạt đến một hình mẫu nào đó.",
+"Bạn là nhiều điều hơn những gì nhìn thấy trong gương: cách bạn quan tâm, suy nghĩ, học hỏi, giúp đỡ và khiến thế giới quanh mình tốt hơn."
+],
+family:[
+"Mong muốn được lắng nghe không phải là đòi hỏi quá đáng. Cảm xúc của bạn có ý nghĩa, ngay cả khi người thân chưa hiểu được ngay.",
+"Bạn không phải một mình chịu trách nhiệm làm cho mọi chuyện trong gia đình trở nên ổn thỏa. Có những điều cần thời gian và sự cố gắng từ nhiều phía.",
+"Nếu chưa thể nói hết, bạn có thể bắt đầu bằng một câu đơn giản: 'Con đang buồn và con muốn được lắng nghe trước khi nhận lời khuyên'.",
+"Bạn có thể yêu gia đình và đồng thời cảm thấy tổn thương vì một số điều đã xảy ra. Hai cảm xúc ấy có thể cùng tồn tại.",
+"Nếu nói chuyện trực tiếp lúc này quá khó, hãy tìm một người lớn đáng tin cậy để giúp bạn diễn đạt điều mình đang trải qua. Bạn không cần xoay xở một mình."
+],
+friends:[
+"Bị bỏ quên hoặc không được đáp lại có thể rất đau. Điều đó không chứng minh rằng bạn không đáng quý; nó chỉ cho thấy mối quan hệ ấy đang khiến bạn tổn thương.",
+"Bạn xứng đáng có tình bạn mà ở đó bạn được tôn trọng, được nói thật và không phải liên tục giả vờ mình ổn.",
+"Không phải mối quan hệ nào cũng kéo dài mãi mãi. Một tình bạn thay đổi không làm những điều tốt đẹp bạn từng trao đi trở nên vô nghĩa.",
+"Nếu đang thấy cô đơn, hãy thử nhắn cho một người bạn tin tưởng hoặc tham gia một hoạt động bạn thích. Kết nối có thể bắt đầu bằng một bước rất nhỏ.",
+"Bạn không cần níu giữ một mối quan hệ bằng cách liên tục hạ thấp nhu cầu và cảm xúc của mình. Sự tôn trọng cần đến từ cả hai phía."
+],
+future:[
+"Bạn không cần phải biết chính xác mình sẽ trở thành ai ngay ở tuổi này. Được tìm hiểu, thử nghiệm và đổi hướng là một phần bình thường của việc trưởng thành.",
+"Khi tương lai trông quá rộng và đáng sợ, hãy thu nhỏ câu hỏi lại: việc nào mình có thể tìm hiểu hoặc thử làm trong tuần này?",
+"Một lựa chọn chưa hoàn hảo không đóng lại mọi cánh cửa. Bạn vẫn có thể học thêm, điều chỉnh và tìm con đường phù hợp hơn.",
+"Bạn không bị tụt lại chỉ vì chưa có kế hoạch rõ ràng như người khác. Mỗi người có thời điểm hiểu mình khác nhau.",
+"Thay vì phải giải quyết cả tương lai hôm nay, hãy tập trung vào bước tiếp theo có thể làm được. Đôi khi sự rõ ràng đến sau khi ta bắt đầu."
+],
+self:[
+"Bạn cũng là một con người cần được nghỉ ngơi, không phải một dự án phải liên tục cải thiện. Hãy dành cho mình sự tử tế mà bạn vẫn dành cho người khác.",
+"Mắc lỗi không xóa đi những điều tốt đẹp bạn đã làm. Bạn có thể nhận trách nhiệm, sửa điều cần sửa và vẫn đối xử dịu dàng với bản thân.",
+"Không phải ngày nào bạn cũng cần đạt thành tích. Có ngày chỉ cần hoàn thành việc cần thiết và chăm sóc mình đã là đủ.",
+"Bạn không cần đợi đến khi hoàn hảo mới cho phép mình vui vẻ, kết nối hay tự hào. Bạn xứng đáng với những điều ấy ngay trong quá trình học hỏi.",
+"Nếu mục tiêu hiện tại khiến bạn kiệt sức, hãy thử chia nó thành một bước nhỏ hơn. Đi chậm một chút vẫn tốt hơn là liên tục trách móc mình."
+],
+other:[
+"Cảm ơn bạn đã viết ra điều đang chất chứa. Đôi khi gọi tên được cảm xúc đã là một bước quan trọng. Bạn không cần phải tìm ra lời giải ngay hôm nay.",
+"Bạn không cần có một lý do thật lớn mới được quyền buồn. Điều bạn đang cảm thấy đáng được lắng nghe, dù người khác có thể chưa hiểu.",
+"Nếu mọi thứ đang rối, hãy thử chọn một điều nhỏ giúp bạn thấy an toàn hơn lúc này: uống nước, hít thở chậm, nghỉ ngơi hoặc tìm người tin cậy.",
+"Bạn không phải giải quyết tất cả một mình. Chia sẻ với một người đáng tin không làm bạn yếu đuối; đó là một cách chăm sóc bản thân.",
+"Mong bạn nhớ rằng một giai đoạn khó khăn không phải toàn bộ câu chuyện cuộc đời mình. Bạn vẫn có thể đi tiếp từng bước, theo nhịp phù hợp."
+]
+};
+let selected=null,currentEntryId=null,wallMode="popular";
+const samplePosts=[
+{id:"s1",category:"study",text:"Có lúc mình nghĩ một bài kiểm tra không tốt sẽ quyết định tất cả. Sau này mình hiểu điểm số là một phần kết quả, không phải toàn bộ giá trị của mình.",via:8,heart:14,date:4},
+{id:"s2",category:"comparison",text:"Mình từng thấy ai cũng tiến nhanh hơn mình. Mình đang tập nhìn lại những bước nhỏ mà bản thân đã đi được.",via:16,heart:20,date:3},
+{id:"s3",category:"family",text:"Mình mong gia đình hiểu rằng đôi khi mình cần được lắng nghe trước khi nhận lời khuyên.",via:12,heart:17,date:2},
+{id:"s4",category:"future",text:"Mình không cần biết hết con đường ngay hôm nay. Chỉ cần tìm bước tiếp theo phù hợp với mình.",via:21,heart:18,date:1}
+];
+function $(id){return document.getElementById(id)}
+function go(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));$(id).classList.add("active");if(id==="wall")renderWall();if(id==="journal")renderJournal()}
+function renderCats(){$("categories").innerHTML=cats.map(c=>`<button class="choice ${selected===c.id?"selected":""}" onclick="pick('${c.id}')">${c.icon} <b>${c.name}</b><small>${c.desc}</small></button>`).join("")}
+function pick(id){selected=id;renderCats();$("classErr").textContent=""}
+function toDiary(){if(!selected){$("classErr").textContent="Hãy chọn một nhóm vấn đề hoặc chọn “Chưa biết gọi tên”.";return}$("diaryPrompt").textContent=prompts[selected];$("diaryTitle").textContent=cats.find(c=>c.id===selected).name;go("diary")}
+$("diaryText").addEventListener("input",()=>{$("count").textContent=$("diaryText").value.length});
+function entries(){try{return JSON.parse(localStorage.getItem("warrior_companion_diary")||"[]")}catch(e){return []}}
+function saveEntries(a){localStorage.setItem("warrior_companion_diary",JSON.stringify(a))}
+function respond(){
+ const text=$("diaryText").value.trim();if(!text){alert("Bạn hãy viết vài dòng hoặc quay lại sau nhé.");return}
+ const pool=support[selected]||support.other;const reply=pool[Math.floor(Math.random()*pool.length)];
+ const e={id:Date.now(),category:selected,text,reply,date:new Date().toLocaleString("vi-VN"),shareStatus:"private",followup:"",via:0,heart:0};
+ const a=entries();a.push(e);saveEntries(a);currentEntryId=e.id;
+ $("replyIntro").textContent="Một lời nhắn dành cho bạn · "+(cats.find(c=>c.id===selected)?.name||"Chưa phân loại");
+ $("replyText").textContent=reply;$("diaryText").value="";$("count").textContent="0";go("reply");
+}
+function currentEntry(){return entries().find(e=>e.id===currentEntryId)}
+function shareCurrent(){const a=entries(),e=a.find(x=>x.id===currentEntryId);if(e){e.shareStatus="pending_review";saveEntries(a)}$("savedTitle").textContent="Đã ghi nhận mong muốn chia sẻ";go("saved");alert("Bản thử nghiệm đã lưu lựa chọn chia sẻ. Bài viết chưa được đăng công khai vì website chưa có máy chủ và kiểm duyệt trực tuyến.")}
+function finishPrivate(){$("savedTitle").textContent="Nhật ký đã được lưu riêng tư";go("saved")}
+function renderJournal(){
+ const a=entries();$("journalList").innerHTML=a.length?a.slice().reverse().map(e=>`<article class="card"><div class="meta">${cats.find(c=>c.id===e.category)?.name||"Chưa phân loại"} · ${escapeHtml(e.date||"")}</div><div class="entrytext">${escapeHtml(e.text)}</div><p class="replylabel">💛 Lời nhắn dành cho bạn</p><div>${escapeHtml(e.reply||"")}</div><label for="future-${e.id}">💌 Lời nhắn gửi cho chính mình trong tương lai</label><textarea id="future-${e.id}" maxlength="1500" style="min-height:85px" placeholder="Ví dụ: Mình đã vượt qua chuyện đó rồi...">${escapeHtml(e.followup||"")}</textarea><div class="actions"><button onclick="saveFuture(${e.id})">Lưu lời nhắn</button><button class="danger" onclick="deleteEntry(${e.id})">🗑️ Xóa nhật ký</button></div><div class="meta">${e.shareStatus==="pending_review"?"Đã chọn chia sẻ · Chưa đăng công khai":"Nhật ký riêng tư"}</div></article>`).join(""):"<p class='muted'>Bạn chưa có mục nhật ký nào.</p>"
+}
+function saveFuture(id){const a=entries(),e=a.find(x=>x.id===id);if(e){e.followup=$("future-"+id).value;saveEntries(a);alert("Đã lưu lời nhắn cho chính mình trong tương lai.")}}
+function deleteEntry(id){if(confirm("Bạn có chắc muốn xóa nhật ký này? Thao tác này không thể hoàn tác.")){saveEntries(entries().filter(e=>e.id!==id));renderJournal()}}
+function showJournal(){go("journal")}
+function reactSample(id,type){const k="warrior_react_"+id+"_"+type;localStorage.setItem(k,String(Number(localStorage.getItem(k)||0)+1));renderWall()}
+function renderWall(){
+ let items=samplePosts.map(p=>({...p,via:p.via+Number(localStorage.getItem("warrior_react_"+p.id+"_via")||0),heart:p.heart+Number(localStorage.getItem("warrior_react_"+p.id+"_heart")||0)}));
+ items.sort((a,b)=>wallMode==="popular"?(b.via+b.heart)-(a.via+a.heart):a.date-b.date);
+ $("wallList").innerHTML=items.map(p=>`<article class="card"><div class="meta">${cats.find(c=>c.id===p.category)?.icon||"✨"} ${cats.find(c=>c.id===p.category)?.name||"Cộng đồng"} · Bài viết minh họa</div>${escapeHtml(p.text)}<div class="post-actions"><button class="alt" onclick="reactSample('${p.id}','via')">🍀 Nhả vía may mắn · ${p.via}</button><button class="alt" onclick="reactSample('${p.id}','heart')">💗 Đồng cảm · ${p.heart}</button></div></article>`).join("")
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+renderCats();
+</script></body></html>
